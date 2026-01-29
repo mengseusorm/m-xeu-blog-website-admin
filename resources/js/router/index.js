@@ -2,7 +2,13 @@ import { createRouter, createWebHistory } from 'vue-router'
 
 const router = createRouter({
     history: createWebHistory(),
-    routes: [ 
+    routes: [
+        {
+            path: '/login',
+            name: 'Login',
+            component: () => import('../pages/auth/LoginPage.vue'),
+            meta: { requiresAuth: false }
+        },
         {
             path: '/',
             name: 'Home',
@@ -25,6 +31,12 @@ const router = createRouter({
             path: '/about',
             name: '/About',
             component: () => import('../pages/About.vue'),
+            meta: { requiresAuth: false }
+        },
+        {
+            path: '/logout',
+            name: 'Logout',
+            component: () => import('../pages/auth/LogoutPage.vue'),
             meta: { requiresAuth: false }
         },
     ],

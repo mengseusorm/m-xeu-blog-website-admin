@@ -41,8 +41,14 @@
     </div>
 </template>
 
-<script>
+<script> 
+import Badge from 'primevue/badge';
+import Avatar from 'primevue/avatar';
 export default {
+    components: { 
+        Badge,
+        Avatar
+    },
     data() {
         return {
             items: [
@@ -79,7 +85,7 @@ export default {
                         },
                         {
                             label: 'Logout',
-                            icon: 'pi pi-sign-out',
+                            icon: 'pi pi-power-off',
                             shortcut: '⌘+Q'
                         }
                     ]
