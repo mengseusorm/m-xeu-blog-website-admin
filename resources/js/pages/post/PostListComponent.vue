@@ -1,7 +1,6 @@
 <template>
     <div class="card">
-        <DataTable :value="posts" v-model:filters="filters" paginator :rows="10" dataKey="id" filterDisplay="row"
-            :loading="loading" :globalFilterFields="['title', 'channel_name', 'video_id']">
+        <DataTable :value="posts" v-model:filters="filters" paginator :rows="10" dataKey="id" filterDisplay="row" resizableColumns columnResizeMode="fit" :loading="loading" :globalFilterFields="['title', 'channel_name', 'video_id']">
             <template #header>
                 <div class="flex justify-between items-center gap-3">
                     <IconField>
@@ -10,7 +9,7 @@
                         </InputIcon>
                         <InputText v-model="filters.global.value" class="w-full" placeholder="Search video, channel, title" />
                     </IconField>
-                    <CreatePostModal :props="'Create'" @postCreated="fetchPosts" />
+                    <CreatePostModal ref="createModal" :props="'New Post'" @postCreated="fetchPosts" />
                 </div>
             </template>
             <template #empty>
@@ -26,7 +25,7 @@
             </Column>
             <Column header="Video">
                 <template #body="{ data }">
-                    <iframe width="160" height="80" :src="`https://www.youtube.com/embed/${data.video_id}`"
+                    <iframe width="120" height="60" :src="`https://www.youtube.com/embed/${data.video_id}`"
                         frameborder="0" allowfullscreen></iframe>
                 </template>
             </Column>
@@ -62,8 +61,8 @@
             </Column>
             <Column  style="min-width: 12rem">
                 <template #body="data">
-                    <Button icon="pi pi-pencil" class="mr-2" @click="editProduct(data.data)" />
-                    <Button icon="pi pi-trash" severity="danger" @click="confirmDeleteProduct(data.data)" />
+                    <Button label="Edit"  variant="link" class="mr-2" @click="editProduct(data.data)" size="small" />
+                    <Button label="Delete"  variant="link"  @click="confirmDeleteProduct(data.data)" size="small" />
                 </template>
             </Column>
 
@@ -171,6 +170,9 @@ export default {
                     );
                 });
         },
+        editProduct(product) { 
+            this.$refs.createModal.openEditModal(product);
+        }
     }
 }
 </script>

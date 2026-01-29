@@ -1,13 +1,12 @@
 <template>
     <div class="card flex justify-center">
         <Toast />
-        <Button type="button" :label="props" icon="pi pi-plus-circle" @click="visible = true" severity="success"
-            variant="outlined" />
-        <Dialog v-model:visible="visible" modal header="Input Youtube URL" :style="{ width: '50rem' }" position="top">
+        <Button v-if="!isEditMode"  :label="props" @click="visible = true" severity="success" variant="link" />
+        <Dialog v-model:visible="visible" modal :header="isEditMode ? 'Edit Post' : 'Input Youtube URL'" :style="{ width: '50rem' }" position="center">
             <Card>
                 <template #content>
                     <span class="text-surface-500 dark:text-surface-400 block mb-8">Update your information.</span>
-                        <div class="flex items-center gap-4 mb-4">
+                        <div class="flex items-center gap-4 mb-4" >
                             <label for="username" class="font-semibold w-24">URLS YT</label>
                             <InputText id="username" class="flex-auto" fluid autocomplete="off" v-model="youtubeURL" />
                             <Message v-if="errors?.youtube_url" severity="error" size="small" variant="simple">{{
@@ -37,9 +36,23 @@
                             <MultiSelect v-model="selectedTags" :options="data?.youtube_video_data?.items[0]?.snippet?.tags"
                                 filter :optionLabel="name" placeholder="Select Tags" :maxSelectedLabels="100"
                                 class="w-full" />
-                            <label for="username">Input Description</label>
+                            <label for="username">Title</label>
                             <InputText type="text" v-model="title" class="w-full" />
-                            <Button label="Save" class="w-full mt-4" type="submit" icon="pi pi-save" security="success" variant="outlined" />
+                            <label for="username">Description</label> 
+                            <Editor v-model="descriptionHtml" editorStyle="height: 320px">
+                                <template v-slot:toolbar>
+                                    <span class="ql-formats">
+                                        <button v-tooltip.bottom="'Bold'" class="ql-bold"></button>
+                                        <button v-tooltip.bottom="'Italic'" class="ql-italic"></button>
+                                        <button v-tooltip.bottom="'Underline'" class="ql-underline"></button>
+                                    </span>
+                                </template>
+                            </Editor>
+
+                            <div class="flex gap-2 mt-4">
+                                <Button label="Cancel" class="flex-1" severity="secondary" @click="visible = false" icon="pi pi-times" variant="outlined" />
+                                <Button :label="isEditMode ? 'Update' : 'Save'" class="flex-1" type="submit" icon="pi pi-save" severity="success" variant="outlined" />
+                            </div>
                         </div>
                     </form>
                 </template>
@@ -83,7 +96,9 @@ export default {
             selectedTags: {},
             name: '',
             channelName: '',
-            publishedAt: ''
+            publishedAt: '',
+            isEditMode: false,
+            editingPostId: null
         };
     },
     computed: {
@@ -96,7 +111,54 @@ export default {
                 )
         }
     },
+    watch: {
+        visible(newVal) {
+            if (!newVal) {
+                this.clear();
+            }
+        }
+    },
     methods: {
+        openEditModal(post) {
+            this.isEditMode = true;
+            this.editingPostId = post.id;
+            this.youtubeURL = post.youtube_video_url;
+            this.title = post.title;
+            this.description = post.description;
+            this.channelName = post.channel_name;
+            this.selectedTags = this.parseTags(post.tags);
+            this.data = {
+                youtube_video_data: {
+                    items: [{
+                        snippet: {
+                            title: post.title,
+                            description: post.description,
+                            channelTitle: post.channel_name,
+                            channelId: post.channel_id,
+                            publishedAt: post.published_at,
+                            thumbnails: {
+                                maxres: {
+                                    url: `https://img.youtube.com/vi/${post.video_id}/maxresdefault.jpg`
+                                }
+                            },
+                            tags: this.parseTags(post.tags)
+                        },
+                        id: post.video_id
+                    }]
+                }
+            };
+            this.visible = true;
+        },
+        parseTags(tags) {
+            if (typeof tags === 'string') {
+                try {
+                    return JSON.parse(tags);
+                } catch {
+                    return [];
+                }
+            }
+            return Array.isArray(tags) ? tags : [];
+        },
         onSubmit() {
             try {
                 axios.post(`/api/youtube_detail`, {
@@ -116,19 +178,25 @@ export default {
             }
         },
         saveData(){
-            const formData = new FormData();
-            formData.append('youtube_video_url', this.youtubeURL);
-            formData.append('title', this.title);
-            formData.append('description', this.description);
-            formData.append('tags', JSON.stringify(this.selectedTags));
-            formData.append('channel_name', this.channelName);
-            formData.append('channel_id', this.data.youtube_video_data.items[0].snippet.channelId);
-            formData.append('video_id', this.data.youtube_video_data.items[0].id);
-            formData.append('published_at', this.data.youtube_video_data.items[0].snippet.publishedAt);
+            const formData = {
+                youtube_video_url: this.youtubeURL,
+                title: this.title,
+                description: this.description,
+                tags: JSON.stringify(this.selectedTags),
+                channel_name: this.channelName,
+                channel_id: this.data.youtube_video_data.items[0].snippet.channelId,    
+                video_id: this.data.youtube_video_data.items[0].id,
+                published_at: this.data.youtube_video_data.items[0].snippet.publishedAt
+                
+            } 
+            const url = this.isEditMode ? `/api/save_youtube_post/${this.editingPostId}` : '/api/save_youtube_post';
+            const method = this.isEditMode ? 'put' : 'post';
+             
             try {
-                axios.post(`/api/save_youtube_post`, formData).then((res) => {
+                axios[method](url, formData).then((res) => {
                     if(res){
-                        this.$toast.add({severity:'success', summary: 'Success', detail: 'Post Created Successfully', life: 3000});
+                        const message = this.isEditMode ? 'Post Updated Successfully' : 'Post Created Successfully';
+                        this.$toast.add({severity:'success', summary: 'Success', detail: message, life: 3000});
                         this.$emit('postCreated');
                         this.clear();
                         this.visible = false
@@ -137,7 +205,7 @@ export default {
                     this.$toast.add({ severity: 'error', summary: 'Error', detail: err.response.data.errors.youtube_video_url?.[0], life: 3000 });
                 });
             } catch (error) {
-                console.log(errors.response)
+                console.log(error)
             }
         },
         clear() {
@@ -148,7 +216,9 @@ export default {
             this.title = '',
             this.selectedTags = {},
             this.name = '',
-            this.channelName = ''
+            this.channelName = '',
+            this.isEditMode = false,
+            this.editingPostId = null
         },
 
     }

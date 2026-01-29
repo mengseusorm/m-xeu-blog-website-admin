@@ -3,6 +3,8 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\Unique;
 
 class PostRequest extends FormRequest
 {
@@ -22,12 +24,12 @@ class PostRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'youtube_video_url' => 'required|string|unique:posts,youtube_video_url',
+            'youtube_video_url' => ['required', Rule::unique('posts', 'youtube_video_url')->ignore($this->route('id'))],
             'channel_id' => 'required|string',
             'video_id' => 'required|string',
             'channel_name' => 'required|string',
             'title' => 'required|string',
-            'description' => 'nullable|string',
+            'description' => 'required|string',
             'tags' => 'nullable',
             'published_at' => 'nullable',
         ];

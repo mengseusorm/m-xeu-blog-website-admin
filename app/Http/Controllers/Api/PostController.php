@@ -55,6 +55,15 @@ class PostController extends Controller
             return response(['status' => false, 'message' => 'Failed to create post'],  500);
         }
     }
+    public function update(PostRequest $request, $id): \Illuminate\Http\Response|PostResource|\Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\Routing\ResponseFactory
+    {
+        try {
+            Log::info($request);
+            return new PostResource($this->postService->update($request, $id));
+        } catch (Exception $exception) {
+            return response(['status' => false, 'message' => $exception->getMessage()], 422);
+        }
+    }
     public function destroy($post): \Illuminate\Http\Response|\Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\Routing\ResponseFactory
     {
         try {

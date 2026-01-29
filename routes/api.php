@@ -12,4 +12,5 @@ Route::get('/user', function (Request $request) {
 Route::post('/youtube_detail',[PostController::class,'ytdetails']);
 Route::post('/save_youtube_post',[PostController::class,'createPost']);
 Route::get('/posts', [PostController::class, 'index']); 
+Route::put('/save_youtube_post/{id}', [PostController::class, 'update']);
 Route::delete('/posts/{id}', [PostController::class, 'destroy']);

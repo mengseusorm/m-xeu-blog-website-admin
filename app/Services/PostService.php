@@ -48,6 +48,22 @@ class PostService
             throw new Exception($exception->getMessage(), 422);
         }
     }
+
+    public function update(PostRequest $request, $id)
+    {
+        try {
+            DB::transaction(function () use ($request, $id) {
+                $this->post = Post::findOrFail($id);
+                $this->post->update($request->validated());
+            });
+            return $this->post;
+        } catch (Exception $exception) {
+            Log::info($exception->getMessage());
+            DB::rollBack();
+            throw new Exception($exception->getMessage(), 422);
+        }
+    }
+    
     public function destroy($id)
     {
         try {
