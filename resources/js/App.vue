@@ -43,6 +43,7 @@ import Button from 'primevue/button'
 import { useRouter, RouterView, useRoute } from 'vue-router'
 import Dialog from 'primevue/dialog'
 import InputText from 'primevue/inputtext'
+import axios from 'axios'
 
 export default {
   components: {
@@ -91,6 +92,7 @@ export default {
   },
   mounted() {
     this.checkAuthStatus()
+    this.initializeAxiosToken()
   },
   watch: {
     'route.name': {
@@ -100,6 +102,12 @@ export default {
     }
   },
   methods: {
+    initializeAxiosToken() {
+      const token = localStorage.getItem('auth_token')
+      if (token) {
+        axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
+      }
+    },
     checkAuthStatus() {
       const token = localStorage.getItem('auth_token')
       this.isAuthenticated = !!token

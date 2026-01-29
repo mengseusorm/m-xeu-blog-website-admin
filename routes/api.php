@@ -22,7 +22,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth:sanctum'])->group(func
 
     Route::prefix('posts')->name('posts.')->group(function () { 
         Route::post('/save_youtube_post',[PostController::class,'createPost']);
-        Route::get('/posts', [PostController::class, 'index']); 
+        Route::get('/', [PostController::class, 'index']); 
         Route::put('/save_youtube_post/{id}', [PostController::class, 'update']);
         Route::delete('/posts/{id}', [PostController::class, 'destroy']);
     }); 

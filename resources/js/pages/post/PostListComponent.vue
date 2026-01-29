@@ -114,7 +114,7 @@ export default {
         fetchPosts() {
             this.loading = true
             axios
-                .get('/api/posts')
+                .get('/api/admin/posts/')
                 .then((res) => {
                     this.posts = res.data.data ?? []
                     this.loading = false
@@ -157,7 +157,7 @@ export default {
             });
         },
         deletePost(id) {
-            axios.delete(`/api/posts/${id}`)
+            axios.delete(`/api/admin/posts/${id}`)
                 .then((res) => {
                     this.fetchPosts();
                 })

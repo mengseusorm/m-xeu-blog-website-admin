@@ -1,5 +1,6 @@
 <template>
     <div class="min-h-screen flex items-center justify-center p-4">
+        <Toast/>
         <Card class="shadow-lg w-full max-w-md">
             <template #content>
                 <div class="w-full flex flex-col items-center justify-center">
@@ -54,7 +55,7 @@
                     </form>
                 </div>  
             </template>
-        </Card>
+        </Card> 
     </div>
 </template>
 
@@ -67,7 +68,8 @@ import InputText from 'primevue/inputtext'
 import Password from 'primevue/password'
 import Checkbox from 'primevue/checkbox'
 import Message from 'primevue/message'
-import Divider from 'primevue/divider'
+import Divider from 'primevue/divider' 
+import Toast from 'primevue/toast'
 
 export default {
     components: {
@@ -77,7 +79,8 @@ export default {
         Password,
         Checkbox,
         Message,
-        Divider
+        Divider, 
+        Toast
     },
     data() {
         return {
@@ -95,14 +98,12 @@ export default {
             }
         }
     },
-    methods: {
-        async handleLogin() {
-            // Clear previous errors
+    methods: { 
+        async handleLogin() { 
             this.errors.email = null
             this.errors.password = null
             this.errors.general = null
-
-            // Validation
+ 
             if (!this.form.email) {
                 this.errors.email = ['Email is required']
                 return
@@ -119,16 +120,14 @@ export default {
                     email: this.form.email,
                     password: this.form.password,
                     remember: this.form.remember_me
-                })
- 
-
-                if (response.data.token) {
-                    // Store token 
+                }) 
+                if (response.data.token) { 
                     localStorage.setItem('auth_token', response.data.token)
                     localStorage.setItem('user_email', response.data.user.email)
                     localStorage.setItem('user_name', response.data.user.name)
-                    axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`
-
+                    axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}` 
+                    console.log(response.data.message)
+                    this.$toast.add({ severity: 'warn', summary: 'Login Success!', detail: 'Message Content', life: 3000 }); 
                     // Redirect to dashboard
                     this.router.push('/post')
                 }

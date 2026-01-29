@@ -161,8 +161,8 @@ export default {
         },
         onSubmit() {
             try {
-                axios.post(`/api/youtube_detail`, {
-                    youtube_url: this.youtubeURL
+                axios.post(`/api/admin/youtube_detail`, {
+                    youtube_url: this.youtubeURL, 
                 }).then((res) => {
                     this.errors = {},
                         this.data = res.data.data;
@@ -174,7 +174,7 @@ export default {
                 });
 
             } catch (error) {
-                console.log(errors.response)
+                console.log(error)
             }
         },
         saveData(){
@@ -189,7 +189,7 @@ export default {
                 published_at: this.data.youtube_video_data.items[0].snippet.publishedAt
                 
             } 
-            const url = this.isEditMode ? `/api/save_youtube_post/${this.editingPostId}` : '/api/save_youtube_post';
+            const url = this.isEditMode ? `/api/admin/posts/save_youtube_post/${this.editingPostId}` : '/api/admin/posts/save_youtube_post';
             const method = this.isEditMode ? 'put' : 'post';
              
             try {
