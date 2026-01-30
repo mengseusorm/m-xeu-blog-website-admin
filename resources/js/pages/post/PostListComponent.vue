@@ -1,5 +1,19 @@
 <template>
     <div class="card">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-2 mb-4">
+            <Card> 
+                <template #title>Total Videos</template>
+                <template #subtitle>{{ countVideo(posts) }}</template>
+                <template #content> 
+                </template> 
+            </Card>
+            <Card > 
+                <template #title>Total Channel</template>
+                <template #subtitle>{{ countChannel(posts) }}</template>
+                <template #content> 
+                </template> 
+            </Card> 
+        </div>
         <DataTable :value="posts" v-model:filters="filters" paginator :rows="10" dataKey="id" filterDisplay="row" resizableColumns columnResizeMode="fit" :loading="loading" :globalFilterFields="['title', 'channel_name', 'video_id']">
             <template #header>
                 <div class="flex justify-between items-center gap-3">
@@ -81,6 +95,7 @@ import InputIcon from 'primevue/inputicon'
 import CreatePostModal from './CreatePostModal.vue'
 import Button from 'primevue/button'
 import Dialog from 'primevue/dialog'
+import Card  from 'primevue/card' 
 export default {
     components: {
         DataTable,
@@ -92,6 +107,7 @@ export default {
         CreatePostModal,
         Button,
         Dialog,
+        Card
     },
 
     data() {
@@ -172,6 +188,27 @@ export default {
         },
         editProduct(product) { 
             this.$refs.createModal.openEditModal(product);
+        },
+        countVideo(posts){ 
+            const map = {}
+
+            posts.forEach(item => {
+                const key = item.youtube_video_url
+                if (!key) return
+
+                map[key] = (map[key] || 0) + 1
+            }) 
+            return Object.values(map).reduce((sum, val) => sum + val, 0) 
+        },
+        countChannel(posts){ 
+            const map = {}
+
+                posts.forEach(item => {
+                    if (!item.channel_name) return
+                    map[item.channel_name] = true
+                })
+
+            return Object.keys(map).length
         }
     }
 }

@@ -23,11 +23,8 @@ class PostService
 
     public function list(PaginateRequest $request)
     {
-        try {
-            $requests = $request->all();
-            // return Post::all()->where(function ($query) use ($requests) {});
-            return Post::all();
-
+        try {    
+            return Post::paginate(10);
         } catch (Exception $exception) {
             Log::info($exception->getMessage());
             DB::rollBack();

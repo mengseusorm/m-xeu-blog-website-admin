@@ -6,11 +6,9 @@
           <!-- <span v-if="isAuthenticated" class="text-sm text-gray-700 mr-3">
             <i class="pi pi-user mr-1"></i>{{ userEmail }}
           </span> -->
-          <Button icon="pi pi-user" rounded variant="text" @click="visible = true" />
-          <Button v-if="!isAuthenticated" label="Login" icon="pi pi-sign-in" class="p-button-rounded p-button-text"
-            @click="router.push('/login')" />
-          <Button v-else label="Logout" icon="pi pi-power-off" class="p-button-rounded p-button-text"
-            @click="handleLogout" />
+          <Button icon="pi pi-user" rounded label="User" variant="text" @click="visible = true" class="p-button-rounded p-button-text"/>
+          <Button v-if="!isAuthenticated" label="Login" icon="pi pi-sign-in" class="p-button-rounded p-button-text" @click="router.push('/login')" />
+          <Button v-else label="Logout" icon="pi pi-power-off" class="p-button-rounded p-button-text" @click="handleLogout" />
         </div>
       </template>
     </Menubar>
