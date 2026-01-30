@@ -55,12 +55,10 @@
                 <template v-if="posts?.length > 0" #filter="{ filterModel, filterCallback }">
                     <InputText v-model="filterModel.value" @input="filterCallback()" placeholder="Search channel" />
                 </template>
-            </Column>
-            <Column header="Tags" style="min-width: 18rem">
-                <template #body="{ data }">
-                    <div class="flex flex-wrap gap-1">
-                        <Tag v-for="tag in parseTags(data.tags)" :key="tag" :value="tag" severity="info" />
-                    </div>
+            </Column>  
+            <Column header="categoryId">
+                <template #body="{ data }"> 
+                    {{ CategoryEnum[data.categoryId] }}
                 </template>
             </Column>
             <Column header="Published At">
@@ -74,12 +72,11 @@
                 </template>
             </Column>
             <Column  style="min-width: 12rem">
-                <template #body="data">
+                <template #body="data"> 
                     <Button label="Edit"  variant="link" class="mr-2" @click="editProduct(data.data)" size="small" />
                     <Button label="Delete"  variant="link"  @click="confirmDeleteProduct(data.data)" size="small" />
                 </template>
-            </Column>
-
+            </Column> 
         </DataTable>
     </div>
 </template>
@@ -96,6 +93,11 @@ import CreatePostModal from './CreatePostModal.vue'
 import Button from 'primevue/button'
 import Dialog from 'primevue/dialog'
 import Card  from 'primevue/card' 
+import CategoryEnum from '../../enum/CategoryEnum'   
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
+
 export default {
     components: {
         DataTable,
@@ -119,6 +121,7 @@ export default {
                 title: { value: null, matchMode: FilterMatchMode.CONTAINS },
                 channel_name: { value: null, matchMode: FilterMatchMode.CONTAINS }
             },
+            CategoryEnum: CategoryEnum
         }
     },
 
@@ -140,15 +143,7 @@ export default {
                     this.posts = []
                     this.loading = false
                 })
-        },
-        parseTags(tags) {
-            try {
-                const parsed = JSON.parse(tags)
-                return Array.isArray(parsed) ? parsed : []
-            } catch {
-                return []
-            }
-        },
+        }, 
 
         formatDate(date) {
             return new Date(date).toLocaleDateString()
@@ -209,7 +204,7 @@ export default {
                 })
 
             return Object.keys(map).length
-        }
+        }, 
     }
 }
 </script>

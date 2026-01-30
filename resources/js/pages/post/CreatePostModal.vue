@@ -49,7 +49,7 @@
                                 </template>
                             </Editor>
 
-                            <div class="flex gap-2 mt-4">
+                            <div class="flex gap-2 mt-4"> 
                                 <Button label="Cancel" class="flex-1" severity="secondary" @click="visible = false" icon="pi pi-times" variant="outlined" />
                                 <Button :label="isEditMode ? 'Update' : 'Save'" class="flex-1" type="submit" icon="pi pi-save" severity="success" variant="outlined" />
                             </div>
@@ -75,12 +75,16 @@ import Card from 'primevue/card';
 import MultiSelect from 'primevue/multiselect';
 import Tag from 'primevue/tag';
 import Toast from 'primevue/toast';
+import Tooltip from 'primevue/tooltip';
 export default {
     props: {
         props: {
             type: String,
             default: () => ({})
         }
+    },
+    directives: {
+        tooltip: Tooltip
     },
     components: {
         Button,Dialog,InputText,Message,Editor,Badge,Textarea,Panel,Card,MultiSelect,Tag,Toast
@@ -122,6 +126,9 @@ export default {
         openEditModal(post) {
             this.isEditMode = true;
             this.editingPostId = post.id;
+            this.data = {
+                youtube_image_url: post.youtube_image_url
+            };
             this.youtubeURL = post.youtube_video_url;
             this.title = post.title;
             this.description = post.description;
@@ -165,9 +172,9 @@ export default {
                     youtube_url: this.youtubeURL, 
                 }).then((res) => {
                     this.errors = {},
-                        this.data = res.data.data;
+                    this.data = res.data.data; 
                     this.description = this.data.youtube_video_data.items[0].snippet.description,
-                        this.title = this.data.youtube_video_data.items[0].snippet.title
+                    this.title = this.data.youtube_video_data.items[0].snippet.title
                     this.channelName = this.data.youtube_video_data.items[0].snippet.channelTitle
                 }).catch((err) => {
                     this.errors = err.response.data.errors;
@@ -180,13 +187,15 @@ export default {
         saveData(){
             const formData = {
                 youtube_video_url: this.youtubeURL,
+                youtube_image_url: this.data.youtube_video_data.items[0].snippet.thumbnails.maxres.url,
                 title: this.title,
                 description: this.description,
                 tags: JSON.stringify(this.selectedTags),
                 channel_name: this.channelName,
                 channel_id: this.data.youtube_video_data.items[0].snippet.channelId,    
                 video_id: this.data.youtube_video_data.items[0].id,
-                published_at: this.data.youtube_video_data.items[0].snippet.publishedAt
+                published_at: this.data.youtube_video_data.items[0].snippet.publishedAt,
+                categoryId: this.data.youtube_video_data.items[0].snippet.categoryId
                 
             } 
             const url = this.isEditMode ? `/api/admin/posts/save_youtube_post/${this.editingPostId}` : '/api/admin/posts/save_youtube_post';
@@ -208,7 +217,7 @@ export default {
                 console.log(error)
             }
         },
-        clear() {
+        clear() { 
             this.youtubeURL = '',
             this.errors = {},
             this.data = {},

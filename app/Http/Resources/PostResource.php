@@ -16,6 +16,7 @@ class PostResource extends JsonResource
     {
         return [
             'id' => $this->id,
+            'youtube_image_url' => $this->youtube_image_url,
             'youtube_video_url' => $this->youtube_video_url,
             'channel_id' => $this->channel_id,
             'video_id' => $this->video_id,
@@ -24,6 +25,7 @@ class PostResource extends JsonResource
             'description' => $this->description,
             'tags' => $this->tags,
             'published_at' => $this->published_at,
+            'categoryId' => $this->categoryId,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];

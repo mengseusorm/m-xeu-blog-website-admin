@@ -8,6 +8,7 @@ class Post extends Model
 {
     protected $casts = [
         'id' => 'integer',
+        'youtube_image_url' => 'string',
         'youtube_video_url' => 'string',
         'channel_id' => 'string',
         'video_id' => 'string',
@@ -16,8 +17,10 @@ class Post extends Model
         'description' => 'string',
         'tags' => 'array',
         'published_at' => 'datetime',
+        'categoryId' => 'integer',
     ];
     protected $fillable = [
+        'youtube_image_url',
         'youtube_video_url',
         'channel_id',
         'video_id',
@@ -26,5 +29,6 @@ class Post extends Model
         'description',
         'tags',
         'published_at',
+        'categoryId'
     ];
 }

@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('posts', function (Blueprint $table) {
             $table->id();
+            $table->string('youtube_image_url')->unique();
             $table->string('youtube_video_url')->unique();
             $table->string('channel_id')->nullable();
             $table->string('video_id')->unique();
@@ -20,7 +21,8 @@ return new class extends Migration
             $table->string('title');
             $table->text('description')->nullable();
             $table->json('tags')->nullable();
-            $table->timestamp('published_at')->nullable();
+            $table->integer('categoryId')->nullable();
+            $table->timestamp('published_at')->nullable(); 
             $table->timestamps();
         });
     }

@@ -24,6 +24,7 @@ class PostRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'youtube_image_url' => ['required', Rule::unique('posts', 'youtube_image_url')->ignore($this->route('id'))],
             'youtube_video_url' => ['required', Rule::unique('posts', 'youtube_video_url')->ignore($this->route('id'))],
             'channel_id' => 'required|string',
             'video_id' => 'required|string',
@@ -32,6 +33,7 @@ class PostRequest extends FormRequest
             'description' => 'required|string',
             'tags' => 'nullable',
             'published_at' => 'nullable',
+            'categoryId' => 'nullable|integer',
         ];
     }
 }
